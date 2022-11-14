@@ -1,0 +1,128 @@
+/** Navbar **/
+.navbar_brand img {
+	height: 40px;
+	position: absolute;
+	top: 8px;
+	left: calc(50% - 20px);
+}
+
+/** footbar **/
+.footbar_link {
+  padding: 0 8px;
+}
+.footbar_link span {
+	margin-left: 10px;
+}
+
+.footbar_link > div {
+	width: 24px;
+	height: 24px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.footbar_selected > div::before {
+	content: "";
+	display: block;
+	width: 26px;
+	border-bottom: solid 5px #f68e80;
+	position: absolute;
+	bottom: 0;
+}
+
+/** Sidebar **/
+.sidebar_header {
+	text-align: center;
+}
+.sidebar_logo {
+	height: 48px;
+	margin-bottom: 30px;
+	margin-top: 10px;
+}
+.sidebar_icon {
+	height: 32px;
+	margin-bottom: 34px;
+}
+.sidebar_nav {
+	position: relative;
+	padding-left: 24px;
+	margin-top: 0;
+}
+.sidebar_nav li {
+	/* color: #701215; */
+	list-style: none;
+  margin-bottom: 25px;
+	font-weight: 600;
+}
+.sidebar_nav li a {
+	display: flex;
+	color: #555;
+}
+.sidebar_footer {
+	width: calc(100% - 20px);
+	position: absolute;
+	bottom: 15px;
+	text-align: center;
+}
+.sidebar_footer i {
+	font-size: 24px;
+	color: #999;
+	margin: 0 15px;
+	background: #fff;
+}
+.sidebar_selected > div::before {
+	content: "";
+	display: block;
+	height: 28px;
+	border-left: solid 5px #f68e80;
+	position: absolute;
+	left: 0;
+}
+
+@media (min-width: 992px) {
+	.sidebar_nav {
+		padding-left: 48px;
+	}
+	.sidebar_logo {
+		height: 56px;
+	}
+	.sidebar_icon {
+		height: 36px;
+	}
+}
+
+/** Topbar **/
+.topbar_title {
+	color: #999;
+	margin: 0;
+	display: inline-block;
+	font-size: 1.25em;
+	font-weight: 700;
+	margin-bottom: 10px;
+}
+.topbar_account {
+	display: flex;
+	align-items: center;
+}
+.topbar_account span {
+	color: #999;
+	font-size: 1em;
+	font-weight: 700;
+}
+.topbar_avatar {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: #f68e80;
+	margin-right: 8px;
+}
+.topbar_ico_alert {
+	width: 24px;
+	height: 24px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url(/icons/alarm-bell.png);
+	margin-right: 15px;
+}
