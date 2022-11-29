@@ -3,13 +3,14 @@ import dynamic from "next/dynamic";
 import Layout from "../../app/layout";
 import ContentHeader from "../../app/layout/ContentHeader";
 import DealDetail from "../../app/home/DealDetail";
+import { splitHexAddress } from "../../app/utils";
 
 function Deal({ params }) {
     const { id } = params;
 
     return (
         <Layout>
-            <ContentHeader title={`Deal ${id}`} />
+            <ContentHeader title={`Deal ${splitHexAddress(id)}`} />
             <div className="cardlist-container p-5">
                 <DealDetail id={id} />
             </div>

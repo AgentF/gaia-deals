@@ -1,7 +1,7 @@
 export const categories = [
     {id: "furniture", name: "Furniture"},
     {id: "clothes", name: "Clothes"},
-    {id: "others", name: "Other"}
+    {id: "other", name: "Other"}
 ]
 
 export const profile = {

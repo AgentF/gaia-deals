@@ -1,7 +1,14 @@
-import { BasicBadge } from "./Badges";
-import { splitHexAddress } from "../utils";
+import { formatDistance, subDays } from 'date-fns'
+import { BasicBadge } from "../layout/CustomBadges";
+import { getBase58Address } from "../tronsvc";
 
-const Review = () => {
+const Review = ({ data, from }) => {
+    if (data === null) {
+        return <div></div>
+    }
+
+    const date = formatDistance(new Date(parseInt(data.timestamp)), new Date(), { addSuffix: true })
+
     return (
         <div className="flex items-start w-full shadow-md border border-white bg-white rounded p-5 my-4">
             <div className="w-24 mr-4">
@@ -9,12 +16,13 @@ const Review = () => {
             </div>
             <div className="flex-1">
                 <div className="flex justify-between">
-                    <span><b>From Seller</b> {splitHexAddress("TQDUiXESXKpn17N9ajjRW3vnvbzDvvWq5S")}</span>
-                    <BasicBadge text="95%" color="green" size="md"/>
+                    <span><b>From </b> {getBase58Address(from)}</span>
+                    <BasicBadge text={parseInt(data.score) + " pt"} color="green" size="md"/>
                 </div>
-                <div className="text-gray-500 text-sm my-2">Some days ago</div>
+                <div className="text-gray-500 text-sm my-2">{date}</div>
                 <div>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                    { data.comment }
+                    {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore */}
                 </div>
             </div>
         </div>

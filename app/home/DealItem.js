@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { StatusBadge, BasicBadge } from "./Badges";
+import { StatusBadge, BasicBadge } from "../layout/CustomBadges";
 
 const DealItem = ({
     articles,
@@ -42,7 +42,7 @@ const DealItem = ({
                         text={`${article.details.age} Years`}
                     />
                     <BasicBadge color="yellow" text={article.details.country} />
-                    {article.details.materials.map((item, i) => (
+                    {article.details.materials.split(",").map((item, i) => (
                         <BasicBadge key={i} color="blue" text={item} />
                     ))}
                 </div>

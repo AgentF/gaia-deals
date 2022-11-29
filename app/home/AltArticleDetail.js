@@ -3,14 +3,20 @@ import { useDatacontext } from "../context";
 
 const AltArticleDetail = ({ id }) => {
     const {
-        data: { categoriesList, articleList },
+        data: { categoriesList, articleList, accountInfo },
     } = useDatacontext();
 
     const article = articleList.find((o) => o.id == id);
-    const cat = categoriesList.find((o) => o.id === article.category);
 
     if (!article) {
         return <div></div>;
+    }
+
+    const cat = categoriesList.find((o) => o.id === article.category);
+    let buyerIsSeller = false;
+    if (accountInfo.address) {
+        buyerIsSeller =
+            accountInfo.address.toLowerCase() === article.seller.toLowerCase();
     }
 
     return (
@@ -34,13 +40,13 @@ const AltArticleDetail = ({ id }) => {
                             </div>
                             <div className="text-gray-700 text-sm mb-4">
                                 <p>
-                                    <b>SELLER</b>: 0x1234567890
+                                    <b>SELLER</b>: {article.seller}
                                 </p>
                                 <p>
                                     <b>REPUTATION</b>: 99%
                                 </p>
                                 <p>
-                                    <b>DEALS CLOSED</b>: 5
+                                    <b>DEALS CLOSED</b>: 1
                                 </p>
                             </div>
                             <div className="mb-4">{article.description}</div>
@@ -55,9 +61,7 @@ const AltArticleDetail = ({ id }) => {
                                     <tr>
                                         <th>Materials</th>
                                         <td className="capitalize pl-2">
-                                            {article.details.materials.join(
-                                                ", "
-                                            )}
+                                            {article.details.materials}
                                         </td>
                                     </tr>
                                     <tr>
@@ -94,11 +98,13 @@ const AltArticleDetail = ({ id }) => {
                                 </div>
                             </div>
                             <div>
-                                <Link href={`/shipping/${id}`}>
-                                    <button className="flex rounded-md bg-green-500 py-2 px-4 text-white transition-all duration-150 ease-in-out hover:bg-green-600">
-                                        BUY NOW
-                                    </button>
-                                </Link>
+                                {!buyerIsSeller && (
+                                    <Link href={`/shipping/${id}`}>
+                                        <a className="flex rounded-md bg-green-500 py-2 px-4 text-white transition-all duration-150 ease-in-out hover:bg-green-600">
+                                            BUY NOW
+                                        </a>
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </div>

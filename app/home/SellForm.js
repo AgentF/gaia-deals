@@ -1,108 +1,113 @@
 import React, { useState, useRef } from "react";
+import { useRouter } from "next/router";
+import { v4 as uuidv4 } from "uuid";
+import { useDatacontext } from "../context";
 import { TagsInput } from "react-tag-input-component";
 import { FileUploader } from "react-drag-drop-files";
+import { CustomInput, CustomSelect, CustomTextarea } from "../layout/CustomInputs";
+import { getLocationCoords } from "../utils";
 
 const fileTypes = ["JPG", "JPEG", "PNG", "GIF"];
 
 const SellForm = () => {
+    const {
+        data: { accountInfo },
+        fn: { publishArticle },
+    } = useDatacontext();
+
+    const router = useRouter();
     const refTitle = useRef();
     const refDescription = useRef();
-    const refImage = useRef();
     const refCategory = useRef();
     const refPrice = useRef();
     const refCountry = useRef();
     const reflifeTime = useRef();
-    const refMaterials = useRef();
+    const refzipCode = useRef();
+    const refstate = useRef();
 
-    const [image, setFile] = useState(null);
-    const [selected, setSelected] = useState(["Wood"]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [image, setImage] = useState(null);
+    const [materials, setMaterials] = useState(["Wood"]);
 
     const handleImageChange = (image) => {
         const reader = new FileReader();
         reader.onload = function () {
-            setFile(reader.result);
+            setImage(reader.result);
         };
         reader.readAsDataURL(image);
     };
 
     const handleSubmit = (e) => {
-        // console.log('Title', refTitle.current.value);
-        // console.log('Description', refDescription.current.value);
-        // console.log('Image', refImage.current.value);
-        // console.log('Category', refCategory.current.value);
-        // console.log('Price', refPrice.current.value);
-        // console.log('Country', refCountry.current.value);
-        // console.log('Life Time', reflifeTime.current.value);
-        // console.log('Materials', refMaterials.current.value);
+        e.preventDefault();
+        submit();
+    };
+
+    const submit = async () => {
+        if (isLoading) return;
+
+        const {lat=0, lng=0} = await getLocationCoords(`${refstate.current.value},${refCountry.current.value}`);
+
+        const data = {
+            id: uuidv4(),
+            seller: accountInfo.address,
+            title: refTitle.current.value,
+            image: "https://via.placeholder.com/500?text=No+Image",
+            category: refCategory.current.value,
+            price: refPrice.current.value,
+            description: refDescription.current.value,
+            timestamp: Date.now(),
+            details: {
+                age: reflifeTime.current.value,
+                materials: materials.join(","),
+                country: refCountry.current.value,
+                state: refstate.current.value,
+                zipcode: refzipCode.current.value,
+                weight: 1,
+                coords: `${lat},${lng}`
+            },
+        };
+
+        setIsLoading(true);
+        /*const result = await publishArticle(data, image);
+        setIsLoading(false);*/
+
+        publishArticle(data, image)
+            .then((response) => {
+                console.log(response);
+                if (response.success) alert("article published");
+                setIsLoading(false);
+                // go to home
+                router.push(`/`);
+            })
+            .catch((err) => {
+                console.log(err);
+                setIsLoading(false);
+            });
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
                 <div className="form-group mb-6">
-                    <label
-                        className="text-gray-900 font-bold text-xl"
-                        htmlFor="title"
-                    >
-                        Title
-                    </label>
-                    <input
-                        className="form-control
-                            block
-                            w-full
-                            px-3
-                            py-1.5
-                            text-base
-                            font-normal
-                            text-gray-700
-                            bg-white bg-clip-padding
-                            border border-solid border-gray-300
-                            rounded
-                            transition
-                            ease-in-out
-                            m-0
-                            mt-2
-                            mb-10
-                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                        type="text"
-                        id="title"
-                        name="title"
-                        ref={refTitle}
-                        placeholder="Sofa"
-                    />
-                    <label
-                        className="text-gray-900 font-bold text-xl"
-                        htmlFor="desc"
-                    >
-                        Description
-                    </label>
-                    <textarea
-                        className="form-control block
-                            w-full
-                            h-36
-                            px-3
-                            py-1.5
-                            text-base
-                            font-normal
-                            text-gray-700
-                            bg-white bg-clip-padding
-                            border border-solid border-gray-300
-                            rounded
-                            transition
-                            ease-in-out
-                            m-0
-                            mt-2
-                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                        type="text"
-                        id="desc"
-                        name="desc"
+                    <div className="mb-10">
+                        <CustomInput
+                            ref={refTitle}
+                            type="text"
+                            name="title"
+                            label="Title"
+                            placeholder="Green Sofa"
+                        />
+                    </div>
+                    <CustomTextarea
                         ref={refDescription}
+                        name="desc"
+                        label="Description"
                         placeholder="Good old comfy sofa"
                     />
                 </div>
                 <div className="form-group mb-6">
                     <label
-                        className="text-gray-900 font-bold text-xl"
+                        className="text-gray-700 font-semibold text-xl"
                         htmlFor="image"
                     >
                         Image
@@ -149,146 +154,76 @@ const SellForm = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div className="form-group mb-6">
-                    <label
-                        className="text-gray-900 font-bold text-xl"
-                        htmlFor="category"
-                    >
-                        Category
-                    </label>
-                    <select
-                        className="form-control
-                            block
-                            w-full
-                            px-3
-                            py-1.5
-                            text-base
-                            font-normal
-                            text-gray-700
-                            bg-white bg-clip-padding
-                            border border-solid border-gray-300
-                            rounded
-                            transition
-                            ease-in-out
-                            m-0
-                            mt-2
-                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                        id="category"
-                        name="category"
+                    <CustomSelect
                         ref={refCategory}
+                        name="category"
+                        label="Category"
                     >
                         <option value="furniture">Furniture</option>
                         <option value="clothes">Clothes</option>
                         <option value="other">Other</option>
-                    </select>
+                    </CustomSelect>
                 </div>
                 <div className="form-group mb-6">
-                    <label
-                        className="text-gray-900 font-bold text-xl"
-                        htmlFor="price"
-                    >
-                        Price
-                    </label>
-                    <input
-                        type="text"
-                        className="form-control
-                            block
-                            w-full
-                            px-3
-                            py-1.5
-                            text-base
-                            font-normal
-                            text-gray-700
-                            bg-white bg-clip-padding
-                            border border-solid border-gray-300
-                            rounded
-                            transition
-                            ease-in-out
-                            m-0
-                            mt-2
-                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                        id="price"
-                        name="price"
+                    <CustomInput
                         ref={refPrice}
-                        placeholder="100$"
+                        type="text"
+                        name="price"
+                        label="Price"
+                        placeholder="100"
                     />
                 </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div className="form-group mb-6">
-                    <label
-                        className="text-gray-900 font-bold text-xl"
-                        htmlFor="country"
-                    >
-                        Country
-                    </label>
-                    <select
-                        className="form-control
-                            block
-                            w-full
-                            px-3
-                            py-1.5
-                            text-base
-                            font-normal
-                            text-gray-700
-                            bg-white bg-clip-padding
-                            border border-solid border-gray-300
-                            rounded
-                            transition
-                            ease-in-out
-                            m-0
-                            mt-2
-                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                        id="country"
-                        name="country"
-                        ref={refCountry}
-                    >
-                        <option value="us">US</option>
-                        <option value="canada">Canada</option>
-                        <option value="mexico">Mexico</option>
-                    </select>
+                    <CustomInput
+                        ref={reflifeTime}
+                        type="text"
+                        name="lifeTime"
+                        label="Age (in Years)"
+                        placeholder="2"
+                    />
                 </div>
                 <div className="form-group mb-6">
-                    <label
-                        className="text-gray-900 font-bold text-xl"
-                        htmlFor="lifeTime"
-                    >
-                        Life Time
-                    </label>
-                    <input
+                    <CustomInput
+                        ref={refCountry}
                         type="text"
-                        className="form-control
-                            block
-                            w-full
-                            px-3
-                            py-1.5
-                            text-base
-                            font-normal
-                            text-gray-700
-                            bg-white bg-clip-padding
-                            border border-solid border-gray-300
-                            rounded
-                            transition
-                            ease-in-out
-                            m-0
-                            mt-2
-                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                        id="lifeTime"
-                        name="lifeTime"
-                        ref={reflifeTime}
-                        placeholder="6 months"
+                        name="country"
+                        label="Country"
+                        placeholder="US"
+                    />
+                </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="form-group mb-6">
+                    <CustomInput
+                        ref={refstate}
+                        type="text"
+                        name="state"
+                        label="State/Province"
+                        placeholder="California"
+                    />
+                </div>
+                <div className="form-group mb-6">
+                    <CustomInput
+                        ref={refzipCode}
+                        type="text"
+                        name="zipCode"
+                        label="Zip Code"
+                        placeholder="90210"
                     />
                 </div>
             </div>
             <div className="form-group mb-6">
                 <label
-                    className="text-gray-900 font-bold text-xl"
+                    className="text-gray-700 font-semibold text-xl"
                     htmlFor="materials"
                 >
                     Materials
                 </label>
                 <TagsInput
-                    value={selected}
-                    onChange={setSelected}
+                    value={materials}
+                    onChange={setMaterials}
                     id="materials"
                     name="materials"
                     placeHolder="Enter materials"
@@ -296,26 +231,9 @@ const SellForm = () => {
             </div>
             <button
                 type="submit"
-                style={{ backgroundColor: "#53D676" }}
-                className="
-                        px-6
-                        py-2.5
-                        text-white
-                        font-medium
-                        justify-self-center
-                        text-lg
-                        leading-tight
-                        uppercase
-                        rounded
-                        shadow-md
-                        hover:bg-blue-700 hover:shadow-lg
-                        focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0
-                        active:bg-blue-800 active:shadow-lg
-                        transition
-                        duration-150
-                        ease-in-out"
+                className={`text-lg font-semibold rounded-md bg-green-500 hover:bg-green-600 py-2 px-4 text-sm text-white transition-all duration-150 ease-in-out`}
             >
-                Publish
+                {isLoading ? "Wait a moment..." : "Publish"}
             </button>
         </form>
     );

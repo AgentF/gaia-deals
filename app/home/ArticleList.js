@@ -1,8 +1,13 @@
 import Link from "next/link";
+import Loader from "./Loader";
+import EmptyState from "./EmptyState";
 import { useDatacontext } from "../context";
 import { splitHexAddress } from "../utils";
 
-const Card = ({ categories, data: { id, title, image, category, price, seller } }) => {
+const Card = ({ categories, data: { id, title, image, category, price, seller, active } }) => {
+    if (!active) 
+        return <div className="hidden"></div>;
+
     const cat = categories.find((o) => o.id === category);
     const linkTo = `/article/${id}`;
     return (
@@ -48,13 +53,26 @@ const Card = ({ categories, data: { id, title, image, category, price, seller } 
 
 const ArticleList = ({ filter }) => {
     const { 
-        data:{ categoriesList, articleList }
+        data:{ categoriesList, articleList, articlesLoaded }
     } = useDatacontext();
 
     const articles = filter ? articleList.filter(o => o.category === filter) : articleList;
 
+    if (!articlesLoaded) {
+        return (
+            <div className="flex flex-wrap">
+                <Loader />
+            </div>
+        )
+    }
+
     return (
         <div className="flex flex-wrap -mx-4">
+            <EmptyState
+                style="mx-8"
+                message="No Publications available!"
+                condition={articles.length === 0}
+            />
             {articles.map((obj) => (
                 <Card 
                     key={obj.id} 

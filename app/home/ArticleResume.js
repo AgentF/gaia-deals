@@ -1,10 +1,11 @@
-import { BasicBadge } from "./Badges";
+import { BasicBadge } from "../layout/CustomBadges";
 
 const ArticleResume = ({ data, category }) => {
+    const materials = data.details.materials.split(',');
     return (
-        <div className="w-full lg:max-w-full lg:flex my-2 px-5">
+        <div className="w-full lg:max-w-full lg:flex my-2">
             <div className="h-48 lg:h-auto lg:w-auto flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden shadow-md">
-                <img src={data.image} alt="" className="h-64 w-auto " />
+                <img src={data.image} alt="" className="h-48 w-auto" />
             </div>
             <div className="flex-1 border-r border-b border-l border-white lg:border-l-0 lg:border-t lg:border-white bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal shadow-md">
                 <div className="flex items-start justify-between mb-4">
@@ -29,7 +30,7 @@ const ArticleResume = ({ data, category }) => {
                             color="yellow"
                             text={data.details.country}
                         />
-                        {data.details.materials.map((item, i) => (
+                        {materials.map((item, i) => (
                             <BasicBadge key={i} color="blue" text={item} />
                         ))}
                     </div>
